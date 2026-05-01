@@ -1,24 +1,84 @@
-# DDEV-Konfiguration für rb-wp-starter
-# Diese Datei wird beim init-site.sh NICHT touched – sie ist generisch.
-# Eine Site-spezifische config.local.yaml kann lokal überschreiben.
+# DDEV-Konfiguration für rb-hubs Site-Repos
 #
-# Vollständiger DDEV-Setup-Workflow folgt in Task #3.
+# Funktioniert out-of-the-box nach `gh repo create from template` + clone.
+# Theme-Slug wird automatisch aus dem Repo-Verzeichnis-Namen abgeleitet.
+#
+# Lokale Overrides: .ddev/config.local.yaml (in .gitignore)
 
-name: SITE_SLUG_PLACEHOLDER  # wird beim init-site.sh ggf. ersetzt – aktuell kommt es eh aus Repo-Name
+name: ""  # leer = DDEV nimmt automatisch den Verzeichnisnamen
 type: wordpress
 docroot: ""
 php_version: "8.2"
 webserver_type: nginx-fpm
 xdebug_enabled: false
-additional_hostnames: []
-additional_fqdns: []
+performance_mode: mutagen   # schnellere Filesync auf macOS
+mutagen_enabled: true
+
 database:
   type: mariadb
   version: "10.11"
+
 nodejs_version: "20"
+
+# WordPress wird in /var/www/html vom DDEV-Image bereitgestellt.
+# Das Theme aus diesem Repo wird per Mount unter wp-content/themes/<slug>/
+# verfügbar gemacht.
+upload_dirs:
+  - wp-content/uploads
+
+web_environment:
+  - WORDPRESS_DEBUG=1
+  - WORDPRESS_DEBUG_DISPLAY=0
+  - WORDPRESS_DEBUG_LOG=1
+
 hooks:
   post-start:
-    - exec: "wp core download --skip-content || true"
-    - exec: "wp core config --dbhost=db --dbname=db --dbuser=db --dbpass=db --skip-check || true"
-    - exec: "wp core install --url=https://${DDEV_HOSTNAME} --title='${DDEV_PROJECT}' --admin_user=admin --admin_password=admin --admin_email=admin@example.com --skip-email || true"
-    - exec: "wp theme activate $(basename $(pwd)) || true"
+    # 1) WordPress-Core herunterladen (falls noch nicht da)
+    - exec: "test -f wp-load.php || wp core download --skip-content --quiet"
+
+    # 2) wp-config.php anlegen (falls noch nicht da)
+    - exec: |
+        test -f wp-config.php || wp config create \
+          --dbhost=db --dbname=db --dbuser=db --dbpass=db \
+          --skip-check --quiet --extra-php <<PHP
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('SCRIPT_DEBUG', true);
+        PHP
+
+    # 3) WordPress installieren (falls noch nicht da)
+    - exec: |
+        wp core is-installed --quiet 2>/dev/null || wp core install \
+          --url=https://${DDEV_HOSTNAME} \
+          --title="${DDEV_PROJECT}" \
+          --admin_user=admin \
+          --admin_password=admin \
+          --admin_email=admin@example.test \
+          --skip-email --quiet
+
+    # 4) Theme symlinken (Repo = Theme-Verzeichnis)
+    - exec: |
+        THEME_DIR="wp-content/themes/${DDEV_PROJECT}"
+        if [ ! -L "$THEME_DIR" ] && [ ! -d "$THEME_DIR" ]; then
+          mkdir -p wp-content/themes
+          ln -sf /var/www/html "$THEME_DIR"
+        fi
+
+    # 5) Theme aktivieren
+    - exec: "wp theme activate ${DDEV_PROJECT} --quiet 2>/dev/null || true"
+
+    # 6) Permalinks setzen (für saubere URLs + CPT-Routing)
+    - exec: "wp rewrite structure '/%postname%/' --quiet 2>/dev/null || true"
+    - exec: "wp rewrite flush --quiet 2>/dev/null || true"
+
+    # 7) NPM-Dependencies + Tailwind initial-build
+    - exec-host: "test -d node_modules || npm install"
+    - exec-host: "npm run build:all 2>/dev/null || true"
+
+  post-stop:
+    - exec-host: "echo '👋 DDEV gestoppt. Daten bleiben erhalten. Mit `ddev start` wieder hoch.'"
+
+# omit_containers entfernt nichts; wir nutzen die Defaults.
+# Wenn du Mailhog für Mail-Tests willst (z.B. SMTP/Auto-Reply testen):
+# additional_hostnames: []  # leer lassen, bekommt automatisch <name>.ddev.site

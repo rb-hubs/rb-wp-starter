@@ -1,0 +1,15 @@
+#!/bin/bash
+## Description: Tailwind im Watch-Mode (rebuilds CSS bei jeder Änderung)
+## Usage: tailwind-watch
+## Example: ddev tailwind-watch
+
+cd "$(ddev describe -j 2>/dev/null | jq -r '.raw.approot' 2>/dev/null || echo .)"
+
+if [ ! -d node_modules ]; then
+  echo "==> Installing npm dependencies..."
+  npm install
+fi
+
+echo "==> Tailwind im Watch-Mode startet..."
+echo "    Stoppen mit Ctrl+C"
+npm run dev

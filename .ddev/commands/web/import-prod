@@ -1,0 +1,43 @@
+#!/bin/bash
+## Description: Importiert Produktions-DB-Dump in die lokale DDEV-DB
+## Usage: import-prod <dump-file>
+## Example: ddev import-prod ~/Downloads/prod-2026-05-01.sql
+
+set -e
+
+if [ -z "$1" ]; then
+  echo "Usage: ddev import-prod <dump-file>"
+  echo "Beispiel: ddev import-prod ~/Downloads/prod-2026-05-01.sql"
+  exit 1
+fi
+
+DUMP="$1"
+
+if [ ! -f "$DUMP" ]; then
+  echo "FEHLER: Datei nicht gefunden: $DUMP"
+  exit 1
+fi
+
+echo "==> Importiere $DUMP in lokale DB..."
+wp db reset --yes --quiet
+wp db import "$DUMP"
+
+# URLs umschreiben (Produktion → lokal)
+read -p "Produktions-Domain (z.B. pumpenpioniere.de): " PROD_DOMAIN
+if [ -n "$PROD_DOMAIN" ]; then
+  echo "==> Schreibe URLs um: https://$PROD_DOMAIN → https://${DDEV_HOSTNAME}"
+  wp search-replace "https://$PROD_DOMAIN" "https://${DDEV_HOSTNAME}" --skip-columns=guid --quiet
+  wp search-replace "http://$PROD_DOMAIN"  "https://${DDEV_HOSTNAME}" --skip-columns=guid --quiet
+fi
+
+# Cache flushen + Permalinks neu
+wp cache flush --quiet
+wp rewrite flush --quiet
+
+# Admin-Passwort auf "admin" setzen für lokales Testing
+wp user update admin --user_pass=admin --quiet 2>/dev/null || true
+
+echo ""
+echo "✅ Produktion lokal verfügbar:"
+echo "   URL:      https://${DDEV_HOSTNAME}"
+echo "   Admin:    admin / admin (Passwort wurde überschrieben!)"

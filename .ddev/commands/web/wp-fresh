@@ -1,0 +1,40 @@
+#!/bin/bash
+## Description: Reset WordPress to a clean install (DROP DB + reinstall)
+## Usage: wp-fresh
+## Example: ddev wp-fresh
+
+set -e
+
+echo "==> WARNING: Resetting WordPress to clean install..."
+echo "    Alle Posts, Pages, Settings werden GELÖSCHT."
+read -p "    Sicher? (y/N) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  echo "Abgebrochen."
+  exit 0
+fi
+
+# DB droppen + neu anlegen
+wp db reset --yes --quiet
+
+# WordPress neu installieren
+wp core install \
+  --url="https://${DDEV_HOSTNAME}" \
+  --title="${DDEV_PROJECT}" \
+  --admin_user=admin \
+  --admin_password=admin \
+  --admin_email=admin@example.test \
+  --skip-email --quiet
+
+# Theme aktivieren
+wp theme activate "${DDEV_PROJECT}" --quiet 2>/dev/null || true
+
+# Permalinks
+wp rewrite structure '/%postname%/' --quiet
+wp rewrite flush --quiet
+
+echo ""
+echo "✅ Frischer WordPress-Install:"
+echo "   URL:      https://${DDEV_HOSTNAME}"
+echo "   Admin:    admin / admin"
+echo "   Theme:    ${DDEV_PROJECT}"

@@ -1,0 +1,14 @@
+#!/bin/bash
+## Description: Exportiert lokale DB als SQL-Dump
+## Usage: export-db [filename]
+## Example: ddev export-db backup-vor-migration.sql
+
+set -e
+
+FILENAME="${1:-${DDEV_PROJECT}-$(date +%Y-%m-%d-%H%M).sql}"
+
+echo "==> Exportiere DB nach $FILENAME..."
+wp db export "$FILENAME" --add-drop-table --quiet
+
+echo "✅ Export fertig: $FILENAME"
+ls -lh "$FILENAME"
