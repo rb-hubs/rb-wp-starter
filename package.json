@@ -10,7 +10,7 @@
     "build:all": "npm run build && npm run build:editor"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.0",
+    "tailwindcss": "^4.2.4",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32"
   },
