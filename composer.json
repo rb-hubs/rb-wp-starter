@@ -6,6 +6,19 @@
   "require": {
     "php": ">=8.2"
   },
+  "require-dev": {
+    "wp-coding-standards/wpcs": "^3.1",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpstan/phpstan": "^1.11"
+  },
+  "scripts": {
+    "lint": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -exec php -l {} \\;",
+    "phpcs": "phpcs",
+    "phpcs:fix": "phpcbf",
+    "phpstan": "phpstan analyse",
+    "test": ["@lint", "@phpcs", "@phpstan"]
+  },
   "repositories": [
     {
       "type": "vcs",
@@ -17,6 +30,9 @@
       "php": "8.2"
     },
     "optimize-autoloader": true,
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }

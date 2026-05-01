@@ -1,0 +1,14 @@
+# Code Owners für rb-hubs Sites
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+
+# Default: Andi reviewt alles
+*       @rb-hubs
+
+# CI / Build / Infrastructure
+.github/                @rb-hubs
+.ddev/                  @rb-hubs
+deploy.sh               @rb-hubs
+composer.json           @rb-hubs
+package.json            @rb-hubs
+phpcs.xml               @rb-hubs
+phpstan.neon.dist       @rb-hubs

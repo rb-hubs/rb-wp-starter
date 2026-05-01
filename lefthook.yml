@@ -1,0 +1,58 @@
+# Lefthook: Pre-commit + Pre-push Hooks
+# https://github.com/evilmartians/lefthook
+#
+# Installation: brew install lefthook
+# Aktivieren:   lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    php-lint:
+      glob: "*.php"
+      run: |
+        for f in {staged_files}; do
+          php -l "$f" || exit 1
+        done
+
+    json-validate:
+      glob: "*.json"
+      run: |
+        for f in {staged_files}; do
+          jq empty "$f" 2>/dev/null || (echo "❌ Invalid JSON: $f" && exit 1)
+        done
+
+    yaml-validate:
+      glob: "*.{yml,yaml}"
+      run: |
+        for f in {staged_files}; do
+          python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null \
+            || (echo "❌ Invalid YAML: $f" && exit 1)
+        done
+
+pre-push:
+  parallel: false
+  commands:
+    tailwind-build:
+      run: |
+        if [ -f package.json ] && grep -q '"build:all"' package.json; then
+          npm run build:all
+          # Built CSS mit-pushen falls verändert
+          git add assets/css/main.css assets/css/editor.css 2>/dev/null || true
+          git diff --cached --quiet || git commit --amend --no-edit
+        fi
+
+commit-msg:
+  commands:
+    conventional-commits:
+      run: |
+        # Conventional Commits: type(scope): subject
+        # Erlaubte types: feat, fix, docs, style, refactor, perf, test, chore, ci, build
+        if ! grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\([a-z0-9-]+\))?!?: .{1,80}' {1}; then
+          echo "❌ Commit-Message folgt nicht Conventional Commits"
+          echo "   Format: type(scope): kurze Beschreibung"
+          echo "   Beispiele:"
+          echo "     feat(header): mega-menu für leistungen"
+          echo "     fix(form): honeypot greift jetzt"
+          echo "     chore(deps): npm packages aktualisiert"
+          exit 1
+        fi

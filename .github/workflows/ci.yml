@@ -1,0 +1,161 @@
+# CI Quality-Gate für rb-hubs Sites
+#
+# Skipped im Template-Repo selbst (rb-wp-starter), läuft in allen Site-Repos.
+# Hostinger pulled über Git-Integration nativ – dieser Workflow validiert nur.
+
+name: CI
+
+on:
+  push:
+    branches: [main, staging, develop]
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate
+    if: github.event.repository.name != 'rb-wp-starter'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2, cs2pr
+          coverage: none
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      # -----------------------------------------------------------------
+      # PHP Quality
+      # -----------------------------------------------------------------
+      - name: PHP Syntax Check
+        run: |
+          ERRORS=0
+          while IFS= read -r f; do
+            if ! php -l "$f" > /dev/null 2>&1; then
+              echo "::error file=$f::PHP Syntax Error"
+              php -l "$f"
+              ERRORS=$((ERRORS+1))
+            fi
+          done < <(find . -name "*.php" -not -path "./vendor/*" -not -path "./node_modules/*")
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "❌ $ERRORS PHP-Datei(en) mit Syntax-Fehler"
+            exit 1
+          fi
+          echo "✅ Alle PHP-Files syntaktisch ok"
+
+      - name: Validate composer.json
+        run: |
+          if [ -f composer.json ]; then
+            composer validate --strict --no-check-publish
+          fi
+
+      - name: Composer install
+        run: |
+          if [ -f composer.json ]; then
+            composer install --no-interaction --prefer-dist --no-progress
+          fi
+
+      - name: PHPCS (WordPress Coding Standards)
+        if: hashFiles('phpcs.xml') != ''
+        run: |
+          if [ -f vendor/bin/phpcs ]; then
+            vendor/bin/phpcs --report=checkstyle | cs2pr || true
+            vendor/bin/phpcs
+          else
+            echo "⚠️  phpcs nicht installiert – siehe composer.json require-dev"
+          fi
+
+      - name: PHPStan (Static Analysis)
+        if: hashFiles('phpstan.neon') != '' || hashFiles('phpstan.neon.dist') != ''
+        run: |
+          if [ -f vendor/bin/phpstan ]; then
+            vendor/bin/phpstan analyse --no-progress --error-format=github
+          else
+            echo "⚠️  phpstan nicht installiert – siehe composer.json require-dev"
+          fi
+
+      # -----------------------------------------------------------------
+      # JS / CSS / Assets
+      # -----------------------------------------------------------------
+      - name: NPM install
+        run: npm ci || npm install
+
+      - name: NPM audit (high+ only)
+        run: npm audit --audit-level=high || true
+
+      - name: Tailwind build
+        run: npm run build:all
+
+      # -----------------------------------------------------------------
+      # Theme Integrity
+      # -----------------------------------------------------------------
+      - name: Theme structure check
+        run: |
+          REQUIRED=("style.css" "theme.json" "functions.php" "templates/index.html")
+          MISSING=0
+          for f in "${REQUIRED[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Pflicht-Datei fehlt: $f"
+              MISSING=$((MISSING+1))
+            fi
+          done
+          if [ "$MISSING" -gt 0 ]; then exit 1; fi
+          echo "✅ Theme-Struktur ok"
+
+      - name: theme.json validation
+        run: |
+          if ! jq empty theme.json 2>/dev/null; then
+            echo "::error file=theme.json::theme.json ist kein valides JSON"
+            exit 1
+          fi
+          echo "✅ theme.json valide"
+
+      # -----------------------------------------------------------------
+      # Reports
+      # -----------------------------------------------------------------
+      - name: Build size report
+        if: always()
+        run: |
+          {
+            echo "## 📦 Build Sizes"
+            echo ""
+            echo "| File | Size |"
+            echo "|---|---|"
+            for f in assets/css/main.css assets/css/editor.css assets/js/main.js; do
+              if [ -f "$f" ]; then
+                SIZE=$(wc -c < "$f")
+                printf "| %s | %d KB |\n" "$f" "$((SIZE/1024))"
+              fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: PR Preview Comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${emoji} CI **${status}** für commit ${context.sha.substring(0,7)}\n\nSiehe Job Summary für Build-Größen.`
+            });

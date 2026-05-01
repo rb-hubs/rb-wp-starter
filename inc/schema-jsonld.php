@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function {{SITE_PREFIX}}_jsonld_organization() {
 	$logo_id = get_theme_mod( 'custom_logo' );
-	$logo    = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : {{SITE_PREFIX_UC}}_URI . '/assets/img/logo.png';
+	$logo    = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : {{SITE_PREFIX_UC}}_THEME_URI . '/assets/img/logo.png';
 
 	$build_address = function ( $line1, $line2 ) {
 		$plz  = trim( explode( ' ', $line2 )[0] ?? '' );

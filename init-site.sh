@@ -49,7 +49,11 @@ echo ""
 # Files-Liste: alle relevanten Files (PHP, HTML, JSON, MD, JS, CSS, YAML, sh)
 # Schließt aus: node_modules, vendor, .git, init-site.sh selbst
 FILES=$(find . -type f \
-  \( -name "*.php" -o -name "*.html" -o -name "*.json" -o -name "*.md" -o -name "*.js" -o -name "*.css" -o -name "*.yml" -o -name "*.yaml" -o -name "*.sh" -o -name ".gitignore" -o -name "style.css" \) \
+  \( -name "*.php" -o -name "*.html" -o -name "*.json" -o -name "*.md" \
+     -o -name "*.js" -o -name "*.css" -o -name "*.yml" -o -name "*.yaml" \
+     -o -name "*.sh" -o -name "*.xml" -o -name "*.neon" -o -name "*.dist" \
+     -o -name ".gitignore" -o -name ".editorconfig" -o -name "CODEOWNERS" \
+     -o -name "style.css" \) \
   -not -path "./node_modules/*" \
   -not -path "./vendor/*" \
   -not -path "./.git/*" \

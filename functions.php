@@ -10,34 +10,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( '{{SITE_PREFIX_UC}}_VERSION', '{{SITE_VERSION}}' );
-define( '{{SITE_PREFIX_UC}}_DIR',     get_template_directory() );
-define( '{{SITE_PREFIX_UC}}_URI',     get_template_directory_uri() );
+define( '{{SITE_PREFIX_UC}}_THEME_VERSION', '{{SITE_VERSION}}' );
+define( '{{SITE_PREFIX_UC}}_THEME_DIR',     get_template_directory() );
+define( '{{SITE_PREFIX_UC}}_THEME_URI',     get_template_directory_uri() );
 
 // Composer autoload (rb-wp-shared & dependencies).
-if ( file_exists( {{SITE_PREFIX_UC}}_DIR . '/vendor/autoload.php' ) ) {
-	require_once {{SITE_PREFIX_UC}}_DIR . '/vendor/autoload.php';
+if ( file_exists( {{SITE_PREFIX_UC}}_THEME_DIR . '/vendor/autoload.php' ) ) {
+	require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/vendor/autoload.php';
 }
 
 // Core includes – generic, taken from rb-wp-starter.
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/helpers.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/customizer.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/schema-jsonld.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/contact-form.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/cpt-lead.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/tracking.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/auto-reply.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/smtp.php';
-require_once {{SITE_PREFIX_UC}}_DIR . '/inc/dashboard-widget.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/helpers.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/customizer.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/schema-jsonld.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/contact-form.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/cpt-lead.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/tracking.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/auto-reply.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/smtp.php';
+require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/dashboard-widget.php';
 
 // Site-specific includes – add your own here.
-// require_once {{SITE_PREFIX_UC}}_DIR . '/inc/your-feature.php';
+// require_once {{SITE_PREFIX_UC}}_THEME_DIR . '/inc/your-feature.php';
 
 /**
  * Theme setup.
  */
 function {{SITE_PREFIX}}_theme_setup() {
-	load_theme_textdomain( '{{SITE_SLUG}}', {{SITE_PREFIX_UC}}_DIR . '/languages' );
+	load_theme_textdomain( '{{SITE_SLUG}}', {{SITE_PREFIX_UC}}_THEME_DIR . '/languages' );
 
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
@@ -71,22 +71,22 @@ function {{SITE_PREFIX}}_enqueue_frontend() {
 		'{{SITE_PREFIX}}-theme',
 		get_stylesheet_uri(),
 		array(),
-		{{SITE_PREFIX_UC}}_VERSION
+		{{SITE_PREFIX_UC}}_THEME_VERSION
 	);
 
 	wp_enqueue_style(
 		'{{SITE_PREFIX}}-main',
-		{{SITE_PREFIX_UC}}_URI . '/assets/css/main.css',
+		{{SITE_PREFIX_UC}}_THEME_URI . '/assets/css/main.css',
 		array( '{{SITE_PREFIX}}-theme' ),
-		{{SITE_PREFIX_UC}}_VERSION
+		{{SITE_PREFIX_UC}}_THEME_VERSION
 	);
 
-	if ( file_exists( {{SITE_PREFIX_UC}}_DIR . '/assets/js/main.js' ) ) {
+	if ( file_exists( {{SITE_PREFIX_UC}}_THEME_DIR . '/assets/js/main.js' ) ) {
 		wp_enqueue_script(
 			'{{SITE_PREFIX}}-main',
-			{{SITE_PREFIX_UC}}_URI . '/assets/js/main.js',
+			{{SITE_PREFIX_UC}}_THEME_URI . '/assets/js/main.js',
 			array(),
-			{{SITE_PREFIX_UC}}_VERSION,
+			{{SITE_PREFIX_UC}}_THEME_VERSION,
 			true
 		);
 	}
@@ -99,9 +99,9 @@ add_action( 'wp_enqueue_scripts', '{{SITE_PREFIX}}_enqueue_frontend' );
 function {{SITE_PREFIX}}_enqueue_editor() {
 	wp_enqueue_style(
 		'{{SITE_PREFIX}}-editor',
-		{{SITE_PREFIX_UC}}_URI . '/assets/css/editor.css',
+		{{SITE_PREFIX_UC}}_THEME_URI . '/assets/css/editor.css',
 		array(),
-		{{SITE_PREFIX_UC}}_VERSION
+		{{SITE_PREFIX_UC}}_THEME_VERSION
 	);
 }
 add_action( 'enqueue_block_editor_assets', '{{SITE_PREFIX}}_enqueue_editor' );

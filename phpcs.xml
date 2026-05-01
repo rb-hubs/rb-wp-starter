@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<ruleset name="rb-hubs WordPress Theme Standards">
+  <description>WordPress-Coding-Standards mit Anpassungen für rb-hubs Themes.</description>
+
+  <!-- Was geprüft wird -->
+  <file>.</file>
+
+  <!-- Was ignoriert wird -->
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/assets/*</exclude-pattern>
+  <exclude-pattern>*.min.js</exclude-pattern>
+  <exclude-pattern>*.min.css</exclude-pattern>
+  <exclude-pattern>*/_archive*/*</exclude-pattern>
+
+  <!-- Argumente -->
+  <arg name="extensions" value="php"/>
+  <arg name="colors"/>
+  <arg value="sp"/>
+  <arg name="parallel" value="8"/>
+
+  <!-- WordPress-Coding-Standards -->
+  <rule ref="WordPress">
+    <!-- Theme-Prefix-Convention: wir nutzen <SITE_PREFIX>_ statt rigides Single-Prefix -->
+    <exclude name="WordPress.NamingConventions.PrefixAllGlobals"/>
+
+    <!-- File-Naming: Block-Theme nutzt Templates wie page-leistungen.html, das ist korrekt -->
+    <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+
+    <!-- Inline JS/CSS-Konkat: in Block-Theme HTML-Templates unvermeidbar -->
+    <exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
+  </rule>
+
+  <!-- Modern PHP -->
+  <rule ref="PHPCompatibilityWP"/>
+  <config name="testVersion" value="8.2-"/>
+
+  <!-- Text-Domain check (SLUG wird beim init-site.sh gesetzt) -->
+  <rule ref="WordPress.WP.I18n">
+    <properties>
+      <property name="text_domain" type="array">
+        <element value="default"/>
+      </property>
+    </properties>
+  </rule>
+
+  <!-- WP-Version-Check -->
+  <config name="minimum_supported_wp_version" value="6.4"/>
+</ruleset>
