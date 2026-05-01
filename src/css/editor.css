@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Editor-spezifische Anpassungen, damit Gutenberg ähnlich aussieht wie Frontend */
+.editor-styles-wrapper {
+  background: #FAF8F5;
+  color: #32302D;
+}

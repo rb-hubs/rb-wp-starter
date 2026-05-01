@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------
+   Site-spezifische Custom-Layer kommen hier rein.
+   Nutze @layer components für wiederverwendbare Klassen.
+   ------------------------------------------------------------ */
+
+@layer base {
+  body {
+    @apply bg-{{SITE_PREFIX}}-bg text-{{SITE_PREFIX}}-ink;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-xl2 px-5 py-3 font-semibold transition-all;
+  }
+
+  .btn-primary {
+    @apply btn bg-{{SITE_PREFIX}}-accent text-white shadow-cta hover:bg-{{SITE_PREFIX}}-accentDk;
+  }
+
+  .btn-secondary {
+    @apply btn bg-{{SITE_PREFIX}}-primary text-white hover:bg-{{SITE_PREFIX}}-primaryDk;
+  }
+}

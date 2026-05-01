@@ -1,0 +1,24 @@
+# DDEV-Konfiguration für rb-wp-starter
+# Diese Datei wird beim init-site.sh NICHT touched – sie ist generisch.
+# Eine Site-spezifische config.local.yaml kann lokal überschreiben.
+#
+# Vollständiger DDEV-Setup-Workflow folgt in Task #3.
+
+name: SITE_SLUG_PLACEHOLDER  # wird beim init-site.sh ggf. ersetzt – aktuell kommt es eh aus Repo-Name
+type: wordpress
+docroot: ""
+php_version: "8.2"
+webserver_type: nginx-fpm
+xdebug_enabled: false
+additional_hostnames: []
+additional_fqdns: []
+database:
+  type: mariadb
+  version: "10.11"
+nodejs_version: "20"
+hooks:
+  post-start:
+    - exec: "wp core download --skip-content || true"
+    - exec: "wp core config --dbhost=db --dbname=db --dbuser=db --dbpass=db --skip-check || true"
+    - exec: "wp core install --url=https://${DDEV_HOSTNAME} --title='${DDEV_PROJECT}' --admin_user=admin --admin_password=admin --admin_email=admin@example.com --skip-email || true"
+    - exec: "wp theme activate $(basename $(pwd)) || true"

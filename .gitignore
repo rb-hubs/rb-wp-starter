@@ -1,0 +1,27 @@
+node_modules/
+vendor/
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.zip
+
+# iCloud sync stubs (sollten wir eh nicht treffen, aber sicher ist sicher)
+*.icloud
+.icloud*
+
+# Design-Handoff-Ordner von Claude Design (Pattern beginnt mit #, daher escaped)
+\#claudedesign_*
+
+# DDEV local data
+.ddev/.dbimports/
+.ddev/db_snapshots/
+.ddev/import.yaml
+
+# Build artifacts
+assets/css/main.css
+assets/css/editor.css
+
+# Local-only env
+.env
+.env.local

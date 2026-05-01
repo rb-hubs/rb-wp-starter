@@ -1,0 +1,22 @@
+{
+  "name": "rb-hubs/{{SITE_SLUG}}-theme",
+  "description": "{{SITE_DESC}}",
+  "type": "wordpress-theme",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.2"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/rb-hubs/rb-wp-shared"
+    }
+  ],
+  "config": {
+    "platform": {
+      "php": "8.2"
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
+}

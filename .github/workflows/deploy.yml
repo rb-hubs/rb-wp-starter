@@ -1,0 +1,52 @@
+# GitHub Actions Deploy-Workflow
+#
+# Triggert auf Push nach main/staging:
+# 1. Tailwind build
+# 2. PHP-Lint
+# 3. Hostinger-Webhook trigger (Server zieht git pull)
+#
+# Vollständiger Workflow folgt in Task #4. Hier steht das Skeleton.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main, staging]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: NPM install + Tailwind build
+        run: |
+          npm install
+          npm run build:all
+
+      - name: PHP Syntax Check
+        run: |
+          find . -name "*.php" -not -path "./vendor/*" -not -path "./node_modules/*" \
+            -exec php -l {} \;
+
+      - name: Trigger Hostinger Webhook (production)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST "${{ secrets.HOSTINGER_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"branch":"main"}'
+
+      - name: Trigger Hostinger Webhook (staging)
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          curl -X POST "${{ secrets.HOSTINGER_WEBHOOK_URL_STAGING }}" \
+            -H "Content-Type: application/json" \
+            -d '{"branch":"staging"}'

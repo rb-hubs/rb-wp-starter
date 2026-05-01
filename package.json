@@ -1,0 +1,20 @@
+{
+  "name": "{{SITE_SLUG}}-theme",
+  "version": "{{SITE_VERSION}}",
+  "description": "{{SITE_DESC}}",
+  "private": true,
+  "scripts": {
+    "dev": "tailwindcss -i ./src/css/main.css -o ./assets/css/main.css --watch",
+    "build": "tailwindcss -i ./src/css/main.css -o ./assets/css/main.css --minify",
+    "build:editor": "tailwindcss -i ./src/css/editor.css -o ./assets/css/editor.css --minify",
+    "build:all": "npm run build && npm run build:editor"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

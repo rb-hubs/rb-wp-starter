@@ -1,0 +1,36 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"{{SITE_PREFIX}}-main","layout":{"type":"constrained"}} -->
+<main class="wp-block-group {{SITE_PREFIX}}-main">
+
+  <!-- wp:group {"tagName":"section","className":"bg-{{SITE_PREFIX}}-bg border-b border-{{SITE_PREFIX}}-line","layout":{"type":"constrained"}} -->
+  <section class="wp-block-group bg-{{SITE_PREFIX}}-bg border-b border-{{SITE_PREFIX}}-line">
+    <!-- wp:group {"className":"py-20 lg:py-28 px-5 lg:px-8 max-w-content mx-auto","layout":{"type":"constrained"}} -->
+    <div class="wp-block-group py-20 lg:py-28 px-5 lg:px-8 max-w-content mx-auto">
+      <!-- wp:heading {"level":1,"className":"text-{{SITE_PREFIX}}-primary text-5xl lg:text-7xl max-w-[20ch] mb-6"} -->
+      <h1 class="wp-block-heading text-{{SITE_PREFIX}}-primary text-5xl lg:text-7xl max-w-[20ch] mb-6">{{SITE_NAME}}</h1>
+      <!-- /wp:heading -->
+      <!-- wp:paragraph {"className":"text-xl text-{{SITE_PREFIX}}-gray max-w-[55ch] mb-10"} -->
+      <p class="text-xl text-{{SITE_PREFIX}}-gray max-w-[55ch] mb-10">Hier kommt deine Hero-Beschreibung hin.</p>
+      <!-- /wp:paragraph -->
+      <!-- wp:buttons -->
+      <div class="wp-block-buttons">
+        <!-- wp:button {"className":"is-style-fill"} -->
+        <div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="/kontakt/">Kontakt aufnehmen</a></div>
+        <!-- /wp:button -->
+      </div>
+      <!-- /wp:buttons -->
+    </div>
+    <!-- /wp:group -->
+  </section>
+
+  <!-- wp:group {"className":"py-16 px-5 lg:px-8 max-w-content mx-auto","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group py-16 px-5 lg:px-8 max-w-content mx-auto">
+    <!-- wp:post-content /-->
+  </div>
+  <!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
