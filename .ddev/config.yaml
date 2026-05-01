@@ -5,7 +5,7 @@
 #
 # Lokale Overrides: .ddev/config.local.yaml (in .gitignore)
 
-name: ""  # leer = DDEV nimmt automatisch den Verzeichnisnamen
+# name: wird absichtlich nicht gesetzt – DDEV nimmt dann automatisch den Verzeichnisnamen
 type: wordpress
 docroot: ""
 php_version: "8.2"

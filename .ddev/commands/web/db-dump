@@ -1,7 +1,7 @@
 #!/bin/bash
-## Description: Exportiert lokale DB als SQL-Dump
-## Usage: export-db [filename]
-## Example: ddev export-db backup-vor-migration.sql
+## Description: Snapshot der lokalen DB als SQL-Dump (mit Auto-Naming, Wrapper um wp db export)
+## Usage: db-dump [filename]
+## Example: ddev db-dump backup-vor-migration.sql
 
 set -e
 

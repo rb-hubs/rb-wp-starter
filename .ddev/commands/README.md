@@ -8,7 +8,7 @@ Diese Scripts sind unter `ddev <command>` aufrufbar, sobald die Site läuft.
 |---|---|
 | `ddev wp-fresh` | DB reset + WordPress clean install + Theme aktivieren |
 | `ddev import-prod <dump.sql>` | Produktions-DB importieren + URLs auf lokal umschreiben |
-| `ddev export-db [name.sql]` | Lokale DB als SQL-Dump exportieren |
+| `ddev db-dump [name.sql]` | Lokale DB als SQL-Dump (Wrapper um `wp db export` mit Auto-Naming). DDEV hat selbst `ddev export-db` als Builtin. |
 
 ## Host-Commands (laufen auf deinem Mac)
 
