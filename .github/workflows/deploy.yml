@@ -5,7 +5,11 @@
 # 2. PHP-Lint
 # 3. Hostinger-Webhook trigger (Server zieht git pull)
 #
-# Vollständiger Workflow folgt in Task #4. Hier steht das Skeleton.
+# WICHTIG: Skipped im Template-Repo selbst (rb-wp-starter), weil dort noch
+# Token-Platzhalter wie {{SITE_PREFIX}} im PHP stehen. Läuft erst in den
+# daraus erstellten Site-Repos (rb-site-*).
+#
+# Vollständiger Workflow folgt in Task #4.
 
 name: Deploy
 
@@ -16,6 +20,8 @@ on:
 
 jobs:
   deploy:
+    # Im Template-Repo nicht ausführen – dort sind noch {{SITE_PREFIX}}-Tokens drin.
+    if: github.event.repository.name != 'rb-wp-starter'
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +31,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: NPM install + Tailwind build
         run: |
